@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<style>
+			#container {
+				display: flex;
+				flex-wrap: wrap;
+			}
+			.checkbox {
+				padding-right: 5px;
+				margin: 3px;
+				background-color: #fff;
+				border-radius: 5px;
+				user-select: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="container">
+			<div class="checkbox">
+				<input id="note1" type="checkbox" onclick="toggle(this)" />
+				<label for="note1">随机任务</label>
+			</div>
+			<div class="checkbox">
+				<input id="note2" type="checkbox" onclick="toggle(this)" />
+				<label for="note2">金碟微彩</label>
+			</div>
+			<div class="checkbox">
+				<input id="note3" type="checkbox" onclick="toggle(this)" />
+				<label for="note3">交收藏品</label>
+			</div>
+		</div>
+		<script type="text/javascript" src="./common.min.js"></script>
+		<script>
+			const oldDate = localStorage.getItem('date')
+			const date = new Date().getDate()
+			if (Number(oldDate) !== date) {
+				localStorage.setItem('date', date)
+				document.querySelectorAll('[type=checkbox]').checked = false
+			} else {
+				document.querySelectorAll('[type=checkbox]').forEach((item) => {
+					const checked = localStorage.getItem(item.id)
+					item.checked = checked && JSON.parse(checked)
+				})
+			}
+
+			let display = true
+			addOverlayListener('ChangeZone', (e) => {})
+			addOverlayListener('LogLine', (e) => {
+				if (e.line[2].length === 4) {
+					console.log(e)
+				}
+				if (e.line[2] === '0038' && e.line[4] === 'notes') {
+					displayOrHideOverlay()
+				}
+				if (e.line[2] === '0839' && /任务结束了。/.test(e.line[4])) {
+					document.querySelector('#note1').click()
+				}
+				if (e.line[2] === '003d' && /请收下！ 欢迎再次光临！/.test(e.line[4])) {
+					document.querySelector('#note2').click()
+				}
+				if (
+					e.line[2] === '0839' &&
+					/提供物资，为支援天穹街做出了贡献！/.test(e.line[4])
+				) {
+					document.querySelector('#note3').click()
+				}
+			})
+
+			function displayOrHideOverlay() {
+				display = !display
+				const div = document.querySelector('#container')
+				div.style.visibility = display ? 'visible' : 'hidden'
+			}
+
+			function toggle(e) {
+				const checked = localStorage.getItem(e.id)
+				localStorage.setItem(e.id, e.checked)
+			}
+
+			startOverlayEvents()
+		</script>
+	</body>
+</html>
