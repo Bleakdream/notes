@@ -68,16 +68,16 @@
 					displayOrHideOverlay(display)
 				}
 				if (e.line[2] === '0839' && /任务结束了。/.test(e.line[4])) {
-					document.querySelector('#note1').click()
+					toggleChecked(document.querySelector('#note1'), true)
 				}
-				if (e.line[2] === '003d' && /请收下！ 欢迎再次光临！/.test(e.line[4])) {
-					document.querySelector('#note2').click()
+				if (e.line[2] === '003d' && e.line[3] === '仙人微彩发放员' && /欢迎再次光临！/.test(e.line[4])) {
+					toggleChecked(document.querySelector('#note2'), true)
 				}
 				if (
 					e.line[2] === '0839' &&
 					/提供物资，为支援天穹街做出了贡献！/.test(e.line[4])
 				) {
-					document.querySelector('#note3').click()
+					toggleChecked(document.querySelector('#note3'), true)
 				}
 			})
 
@@ -87,6 +87,7 @@
 			}
 
 			function toggleChecked(e, checked) {
+				e.checked = checked
 				localStorage.setItem(e.id, checked || e.checked)
 			}
 
