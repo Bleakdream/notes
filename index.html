@@ -23,43 +23,49 @@
 	<body>
 		<div id="container">
 			<div class="checkbox">
-				<input id="note1" type="checkbox" onclick="toggle(this)" />
+				<input id="note1" type="checkbox" onclick="toggleChecked(this)" />
 				<label for="note1">随机任务</label>
 			</div>
 			<div class="checkbox">
-				<input id="note2" type="checkbox" onclick="toggle(this)" />
+				<input id="note2" type="checkbox" onclick="toggleChecked(this)" />
 				<label for="note2">金碟微彩</label>
 			</div>
 			<div class="checkbox">
-				<input id="note3" type="checkbox" onclick="toggle(this)" />
+				<input id="note3" type="checkbox" onclick="toggleChecked(this)" />
 				<label for="note3">交收藏品</label>
 			</div>
 		</div>
 		<script type="text/javascript" src="./common.min.js"></script>
 		<script>
 			let display = false
-			const oldDate = localStorage.getItem('date')
-			const date = new Date().getDate()
-			if (Number(oldDate) !== date) {
-				localStorage.setItem('date', date)
-				document.querySelectorAll('[type=checkbox]').checked = false
-			} else {
+			let oldDate = localStorage.getItem('date')
+			let date = new Date().getDate()
+
+			if (Number(oldDate) === date) {
 				let flag = false
 				document.querySelectorAll('[type=checkbox]').forEach((item) => {
 					const checked = localStorage.getItem(item.id)
 					item.checked = checked && JSON.parse(checked)
 					if (!item.checked) flag = true
 				})
+				display = true
 				if (flag) displayOrHideOverlay()
 			}
 
-			addOverlayListener('ChangeZone', (e) => {})
+			addOverlayListener('ChangeZone', (e) => {
+				updateCheckboxStatus()
+			})
+
 			addOverlayListener('LogLine', (e) => {
+				date = new Date().getDate()
+				updateCheckboxStatus()
+
 				if (e.line[2].length === 4) {
 					console.log(e)
 				}
 				if (e.line[2] === '0038' && e.line[4] === 'notes') {
-					displayOrHideOverlay()
+					display = !display
+					displayOrHideOverlay(display)
 				}
 				if (e.line[2] === '0839' && /任务结束了。/.test(e.line[4])) {
 					document.querySelector('#note1').click()
@@ -76,14 +82,25 @@
 			})
 
 			function displayOrHideOverlay() {
-				display = !display
 				const div = document.querySelector('#container')
 				div.style.visibility = display ? 'visible' : 'hidden'
 			}
 
-			function toggle(e) {
-				const checked = localStorage.getItem(e.id)
-				localStorage.setItem(e.id, e.checked)
+			function toggleChecked(e, checked) {
+				localStorage.setItem(e.id, checked || e.checked)
+			}
+
+			function updateCheckboxStatus() {
+				console.log(Number(oldDate), date)
+				if (Number(oldDate) !== date) {
+					oldDate = date
+					localStorage.setItem('date', date)
+					document.querySelectorAll('[type=checkbox]').forEach((item) => {
+						toggleChecked(item, false)
+					})
+					display = true
+					displayOrHideOverlay()
+				}
 			}
 
 			startOverlayEvents()
