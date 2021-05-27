@@ -37,6 +37,7 @@
 		</div>
 		<script type="text/javascript" src="./common.min.js"></script>
 		<script>
+			let display = true
 			const oldDate = localStorage.getItem('date')
 			const date = new Date().getDate()
 			if (Number(oldDate) !== date) {
@@ -52,7 +53,6 @@
 				if (flag) displayOrHideOverlay()
 			}
 
-			let display = true
 			addOverlayListener('ChangeZone', (e) => {})
 			addOverlayListener('LogLine', (e) => {
 				if (e.line[2].length === 4) {
