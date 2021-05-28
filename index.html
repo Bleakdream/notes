@@ -70,7 +70,11 @@
 				if (e.line[2] === '0839' && /任务结束了。/.test(e.line[4])) {
 					toggleChecked(document.querySelector('#note1'), true)
 				}
-				if (e.line[2] === '003d' && e.line[3] === '仙人微彩发放员' && /欢迎再次光临！/.test(e.line[4])) {
+				if (
+					e.line[2] === '003d' &&
+					e.line[3] === '仙人微彩发放员' &&
+					/欢迎再次光临！/.test(e.line[4])
+				) {
 					toggleChecked(document.querySelector('#note2'), true)
 				}
 				if (
@@ -87,8 +91,12 @@
 			}
 
 			function toggleChecked(e, checked) {
-				e.checked = checked
+				if (checked) e.checked = checked
 				localStorage.setItem(e.id, checked || e.checked)
+				if (![...document.querySelectorAll('[type=checkbox]')].some(item => !item.checked)) {
+					display = false
+					displayOrHideOverlay()
+				}
 			}
 
 			function updateCheckboxStatus() {
