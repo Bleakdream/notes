@@ -91,7 +91,7 @@
 			}
 
 			function toggleChecked(e, checked) {
-				if (checked) e.checked = checked
+				if (checked !== void 0) e.checked = checked
 				localStorage.setItem(e.id, checked || e.checked)
 				if (![...document.querySelectorAll('[type=checkbox]')].some(item => !item.checked)) {
 					display = false
